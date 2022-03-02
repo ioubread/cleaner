@@ -1,83 +1,182 @@
 import os
 import sys
+import shutil
 
-# Cleaning function accepts list of file names
+
+
 def cleanFiles(targetFileNames: list):
 
-    # Adjusting variables
     acceptableFileTypes = ["txt", "py", "pyw"]
-    outputDirectory = "CleanupOutput"
 
-    # Prepare the output directory
+    outputDirectory = "CleanupOutputOld"
+
     os.mkdir(outputDirectory)
 
-    # Types of conditions for each line
     clearBlanklines = True
     clearComments = True
 
-    # Looping through each filename supplied
     for targetFileName in targetFileNames:
 
-        # Manipulating strings (Filename)
+        # print("-------------------------")
+
         targetFileNameReversed = targetFileName[::-1]
+
         extensionReversed, _, basenameReversed = str(targetFileNameReversed).partition(".")
+
         basenameStraightened = basenameReversed[::-1]
         extensionStraightened = extensionReversed[::-1]
 
-        # Go to next file if filetype isn't what we're ready for
+        # fullnameStraightened = f"{basenameStraightened}.{extensionStraightened}"
+
+        # print(f"{targetFileName} == {fullnameStraightened}")
+
         if extensionStraightened not in acceptableFileTypes:
+
+            # print(f"{targetFileName} wasn't part of the acceptable file types of {str(acceptableFileTypes)}")
+
             continue
 
-        # Reading contents of current target file
+        
+        
+        # print(f"Cleaning the file: {targetFileName}")
+
+
+
+
+
+
         openedFile = open(targetFileName, "r")
+
         fileContents = openedFile.read()
+
         openedFile.close()
+
+        
         contentSplitted = fileContents.split("\n")
 
-        # Preparing vessel to collect each successful line
         finalContents = []
 
-        # Looping through each line of content
         for line in contentSplitted:
 
-            # We're assuming the line starts off successful
             lineClearsConditions = True
 
-            # Fail the line if it seems to be an empty line
             if clearBlanklines:
+                
                 if (line.strip()) == "":
                     lineClearsConditions = False
+                #     # continue
+                # else:
+                #     finalContents.append(line)
+                    # continue
+
             
-            # Fail the line if it seems to start with a '#', indicating a comment
             if clearComments:
+
                 if (line.lstrip()).startswith("#"):
                     lineClearsConditions = False
-            
-            # If it did not trigger any of the above checks, then it remains successful and will be added to the final result
+                #     continue
+                # else:
+                #     finalContents.append(line)
+
+            # finalC
+
+
+            # print(f"for line: {line}, lineClearscondition is {lineClearsConditions}")
+
             if lineClearsConditions:
                 finalContents.append(line)
+
+
+            # if clearBlanklines:
+            #     if not (line.strip() == ""):
+            #         finalContents.append(line)
+            #         continue
+
+            # if clearComments:
+
+            #     # if not ((line).lstrip().startswith("#")):
+                
+            #     if not ((line.lstrip()).startswith("#")):
+            #         finalContents.append(line)
+            #         continue
+
+
         
-        # Join each line back
         finalTowrite = "\n".join(finalContents)
 
-        # Write the finalised (cleaned) contents back to the file
-        newFilename = f"{outputDirectory}/{basenameStraightened}.{extensionStraightened}"
-        writeFile = open(newFilename, "w")
+        # print(finalContents)
+
+        # print(finalTowrite)
+
+            # print(line)
+
+        # finalTowrite = "\n".join(finalContents)
+
+        # print(finalTowrite)
+
+        # newFilename = f"{outputDirectory}/{basenameStraightened}_clean.{extensionStraightened}"
+        
+        # newFilename = f"{outputDirectory}/{basenameStraightened}.{extensionStraightened}"
+        kindaOriginalFilename = f"{basenameStraightened}.{extensionStraightened}"
+        shouldMoveOldFileTo = f"{outputDirectory}/{basenameStraightened}.{extensionStraightened}"
+
+
+        # writeFile = open(newFilename, "w")
+
+        shutil.move(kindaOriginalFilename, shouldMoveOldFileTo)
+        
+        writeFile = open(kindaOriginalFilename, "w")
         writeFile.write(finalTowrite)
         writeFile.close()
 
-    # If we've run the program and there seems to be no valid output files, we delete the output directory (To avoid clutter)
+    # print(len(os.listdir(outputDirectory)))
+
     if len(os.listdir(outputDirectory)) == 0:
         os.rmdir(outputDirectory)
 
-# Getting the list of files in the current directory
+
+
+
+
+
+
+
+
+
+
+
 ownName = os.path.basename(sys.argv[0])
+
+
+# print((ownName))
+
 filesHere = os.listdir('.')
+
+# print(filesHere)
+
 filesHere.remove(ownName)
 
-# If we're the sole file in the directory, we exit
+
 if len(filesHere)<= 0:
     sys.exit()
 
-# Run the program
+
+# if len(filesHere) == 1:
+#     targetFile = filesHere[0]
+
+#     # print(targetFile)
+
+#     if not targetFile == ownName:
+#         # runprocess()
+#         cleanFile(targetFile)
+
+# else:
+#     print("no suitable target")
+
+
 cleanFiles(filesHere)
+
+
+
+
+# input()
